@@ -1,9 +1,10 @@
-from .taxcom import get_token
+from functions.connections.taxcom import get_token
 from database.postgresql import AsyncDatabase
-from .api import get_units
+from functions.connections.api import get_units
 from configurations.conf import Config
 from datetime import datetime, timedelta
-from .sales import Sales
+from functions.source.sales import Sales
+from functions.source.tax import Tax
 
 
 async def work():
@@ -25,5 +26,6 @@ async def work():
     for rest, value in units_dict.items():
         sales = Sales()
         await sales.sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
+        print(sales.cashbox)
         break
     await pool.close()
