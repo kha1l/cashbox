@@ -51,36 +51,37 @@ async def app_check(dodo, tax, token, uuid, name, dt_start, dt_end):
         'https://www.googleapis.com/auth/drive',
     ]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        'daily-metrics-320506-70fa78e9f9d7.json',
+        './configurations/writer.json',
         scopes=scopes
     )
     gsc = gspread.authorize(credentials)
-    sheet = gsc.open_by_key(cfg.stationary[name][0])
+    sh = cfg.table
+    sheet = gsc.open_by_key(sh)
     gt = sheet.worksheet(name)
-
     result.append(dt_end.split('T')[0])
-    result.append(dodo_revenue)
+    result.append(int(dodo_revenue))
     rev_dodo = []
     for i in range(1, 4):
         rev = sorted_dodo.get(i)
         if rev:
-            result.append(rev[-1])
-            rev_dodo.append(rev[-1])
+            result.append(int(rev[-1]))
+            rev_dodo.append(int(rev[-1]))
         else:
             result.append(0)
             rev_dodo.append(0)
+    result.append(int(tax_revenue))
     rev_tax = []
     for i in range(1, 4):
         rev = sorted_tax.get(i)
         if rev:
-            result.append(rev[-1])
-            rev_tax.append(rev[-1])
+            result.append(int(rev[-1]))
+            rev_tax.append(int(rev[-1]))
         else:
             result.append(0)
             rev_tax.append(0)
-    result.append(dodo_revenue - tax_revenue)
+    result.append(int(dodo_revenue - tax_revenue))
     for j in range(3):
-        result.append(rev_dodo[j] - rev_tax[j])
+        result.append(int(rev_dodo[j] - rev_tax[j]))
     result.append(len(out_check))
     str_check = ''
     for k, v in result_check.items():

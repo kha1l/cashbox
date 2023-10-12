@@ -9,7 +9,7 @@ class Tax:
         dt_end = datetime.strftime(dt, '%Y-%m-%dT%H:%M:%S')
         dt_start = datetime.strftime((dt - timedelta(days=1)).replace(hour=5), '%Y-%m-%dT%H:%M:%S')
         kkt = await get_taxcom_api('https://api-lk-ofd.taxcom.ru/API/v2/KKTList',
-                                   token, id=data[2])
+                                   token, id=data[1])
         for record in kkt['records']:
             fn = record['fnFactoryNumber']
             shifts = await get_taxcom_api('https://api-lk-ofd.taxcom.ru/API/v2/ShiftList',

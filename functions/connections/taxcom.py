@@ -8,7 +8,7 @@ async def get_token(rest):
     data = {
         'login': cfg.login,
         'password': cfg.password_tax,
-        'agreementNumber': value[1]
+        'agreementNumber': value[0]
     }
     headers = {
         "user-agent": 'DodoSouth',

@@ -30,5 +30,4 @@ async def work():
         await sales.sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
         await tax.tax_app(token_tax['sessionToken'], cfg.stationary[rest], dt_now)
         await app_check(sales, tax, token_api['tokenAccess'], value[-1], rest, dt_start, dt_end)
-        break
     await pool.close()
