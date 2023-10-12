@@ -5,6 +5,7 @@ class Sales:
     skip = 0
     take = 1000
     cashbox = {}
+    total_count = 0
 
     async def sales_app(self, rest, token, dt_start, dt_end):
         reach = True
@@ -15,19 +16,19 @@ class Sales:
             self.skip += self.take
             for sales in response['sales']:
                 products = sales['products']
+                order = sales['orderId']
                 cashbox_type = sales['cashBoxType']
                 cashbox_number = sales['cashBoxNumber']
                 check = sales['checkNumber']
                 price = 0
                 for pr in products:
                     price += pr['priceWithDiscount']
-                self.cashbox[check] = [cashbox_number, cashbox_type, price]
+                self.cashbox[check] = [order, cashbox_number, cashbox_type, price]
+                self.total_count += 1
             try:
                 if response['isEndOfListReached']:
                     reach = False
-            except TypeError as e:
-                print(e)
+            except TypeError:
                 reach = False
-            except KeyError as e:
-                print(e)
+            except KeyError:
                 reach = False

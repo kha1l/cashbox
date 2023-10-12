@@ -5,13 +5,13 @@ from configurations.conf import Config
 from datetime import datetime, timedelta
 from functions.source.sales import Sales
 from functions.source.tax import Tax
+from functions.application import app_check
 
 
 async def work():
     db = AsyncDatabase()
     cfg = Config()
     pool = await db.create_pool()
-    token_tax = await get_token()
     units_dict = cfg.stationary
     token_api = await db.select_tokens(pool)
     units = await get_units(access=token_api['tokenAccess'])
@@ -24,8 +24,11 @@ async def work():
             value.append(unit['id'])
             units_dict[unit['name']] = value
     for rest, value in units_dict.items():
+        token_tax = await get_token(rest)
         sales = Sales()
+        tax = Tax()
         await sales.sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
-        print(sales.cashbox)
+        await tax.tax_app(token_tax['sessionToken'], cfg.stationary[rest], dt_now)
+        await app_check(sales, tax, token_api['tokenAccess'], value[-1], rest, dt_start, dt_end)
         break
     await pool.close()

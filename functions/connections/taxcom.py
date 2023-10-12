@@ -2,11 +2,13 @@ import aiohttp
 from aiohttp.client_exceptions import ContentTypeError
 from configurations.conf import Config
 
-async def get_token():
+async def get_token(rest):
     cfg = Config()
+    value = cfg.stationary.get(rest)
     data = {
         'login': cfg.login,
-        'password': cfg.password_tax
+        'password': cfg.password_tax,
+        'agreementNumber': value[1]
     }
     headers = {
         "user-agent": 'DodoSouth',
@@ -30,7 +32,7 @@ async def get_taxcom_api(url, access, **kwargs):
     headers = {
         "user-agent": 'DodoSouth',
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {access}"
+        "Session-Token": access
     }
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, params=data) as response:
