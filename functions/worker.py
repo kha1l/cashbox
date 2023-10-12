@@ -3,8 +3,8 @@ from database.postgresql import AsyncDatabase
 from functions.connections.api import get_units
 from configurations.conf import Config
 from datetime import datetime, timedelta
-from functions.source.sales import Sales
-from functions.source.tax import Tax
+from functions.source.sales import sales_app
+from functions.source.tax import tax_app
 from functions.application import app_check
 
 
@@ -25,9 +25,8 @@ async def work():
             units_dict[unit['name']] = value
     for rest, value in units_dict.items():
         token_tax = await get_token(rest)
-        sales = Sales()
-        tax = Tax()
-        await sales.sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
-        await tax.tax_app(token_tax['sessionToken'], cfg.stationary[rest], dt_now)
-        await app_check(sales, tax, token_api['tokenAccess'], value[-1], rest, dt_start, dt_end)
+        dodo = await sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
+        tax = await tax_app(token_tax['sessionToken'], value, dt_now)
+        await app_check(dodo, tax, token_api['tokenAccess'],
+                        value[-1], rest, dt_start, dt_end)
     await pool.close()

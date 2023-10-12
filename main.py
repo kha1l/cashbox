@@ -3,7 +3,8 @@ from configurations.conf import Config
 from functions.worker import work
 
 
-Config.scheduler.add_job(work, 'cron', hour=16, minute=43)
+Config.scheduler.add_job(work, 'cron', hour=2, minute=0)
+
 
 async def main():
     cfg = Config()
