@@ -9,13 +9,17 @@ from functions.application import app_check
 
 
 async def work():
+    print('start')
     db = AsyncDatabase()
     cfg = Config()
     pool = await db.create_pool()
     units_dict = cfg.stationary
     token_api = await db.select_tokens(pool)
     units = await get_units(access=token_api['tokenAccess'])
-    dt_now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # dt_now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # dt_end = datetime.strftime(dt_now, '%Y-%m-%dT%H:%M:%S')
+    # dt_start = datetime.strftime(dt_now - timedelta(days=2), '%Y-%m-%dT%H:%M:%S')
+    dt_now = datetime(2023, 10, 23, 0, 0, 0)
     dt_end = datetime.strftime(dt_now, '%Y-%m-%dT%H:%M:%S')
     dt_start = datetime.strftime(dt_now - timedelta(days=1), '%Y-%m-%dT%H:%M:%S')
     for unit in units:
@@ -25,8 +29,10 @@ async def work():
             units_dict[unit['name']] = value
     for rest, value in units_dict.items():
         token_tax = await get_token(rest)
-        dodo = await sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
         tax = await tax_app(token_tax['sessionToken'], value, dt_now)
-        await app_check(dodo, tax, token_api['tokenAccess'],
-                        value[-1], rest, dt_start, dt_end)
+        dodo = await sales_app(value[-1], token_api['tokenAccess'], dt_start, dt_end)
+        break
+    #     await app_check(dodo, tax, token_api['tokenAccess'],
+    #                     value[-1], rest, dt_start, dt_end)
+    # print(dt_start)
     await pool.close()
